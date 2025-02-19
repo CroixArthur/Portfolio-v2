@@ -1,0 +1,31 @@
+main {
+    background-color: #01090D;
+    height: 100vh;
+    width: 100vw;
+    display: inline-block;
+    position: relative;
+}
+
+body {
+    margin: 0;
+}
+
+.planet {
+    position: absolute;
+    border-radius: 100%;
+}
+
+.centered {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.sun {
+    background-color: #F3D811;
+    box-shadow: 0px 0px 99px 58px rgb(252, 150, 1, 0.8);
+}
+
+.ellipse {
+    border: gray solid 1px;
+}
