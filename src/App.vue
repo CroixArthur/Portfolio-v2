@@ -1,12 +1,12 @@
 <template>
-  <main>
+  <main :style="getWindowOffsetStyle">
     <div
-      class="planet centered ellipse"
+      class="abs-round centered ellipse"
       v-for="ellipse in ellipses"
       :style="'width: '+ellipse+'%;height: '+(ellipse/2)+'%'"
     ></div>
     <div
-      class="planet centered"
+      class="abs-round planet centered"
       style="background-color: blue;"
       v-for="planet in planets"
       :style="{
@@ -16,15 +16,18 @@
         left: planet.x + '%',
       }"
       :id="planet.name"
+      @click="selectedPlanet = planet"
     ></div>
-    <div class="planet centered sun" style="width: 6vh;height: 6vh"></div>
+    <div class="abs-round centered sun" style="width: 6vh;height: 6vh"></div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { Planet } from './planet';
 
+const viewOffset = ref({ y: 0, x: 0 });
+const selectedPlanet = ref<Planet|null>(null);
 const ellipses: number[] = [90, 72, 60, 48, 30, 18];
 const planets = ref<Planet[]>([
   { y: 40, x: 10, d: 5, p: 600, name: "pienerth", speed: 0.1 },
@@ -34,6 +37,12 @@ const planets = ref<Planet[]>([
   { y: 45, x: 61, d: 3.5, p: 920, name: "stheno", speed: 0.5 },
   { y: 53, x: 44, d: 2.5, p: 360, name: "tammuz", speed: 0.6 },
 ]);
+
+const getWindowOffsetStyle = computed(() => {
+  return selectedPlanet.value != null
+    ? "{margin-top: selectedPlanet.value.y,margin-left: selectedPlanet.value.x}"
+    : "";
+})
 
 const getPosOnEllipse = (x: number, y: number, w: number, h: number, p: number) => {
   const t = p/1000 * 2 * Math.PI;
