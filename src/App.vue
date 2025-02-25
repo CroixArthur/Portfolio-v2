@@ -3,10 +3,14 @@
     <div
       class="camera"
       :style="{
-        marginTop: viewOffset.y + '%',
-        marginLeft: viewOffset.x + '%',
+        // marginTop: viewOffset.y ? 'calc(' + viewOffset.y + '% - ' + (selectedPlanet?.d ?? 0) / 2 + 'vh)' : 0,
+        // marginLeft: viewOffset.x ? 'calc(' + viewOffset.x + '% - ' + (selectedPlanet?.d ?? 0) / 2 + 'vh)' : 0,
+        //marginTop: viewOffset.y + '%',
+        marginTop: - viewOffset.y + '%',
+        marginLeft: - viewOffset.x + '%',
         scale: viewScale
       }"
+      @click="() => unselectPlanet()"
     >
       <div
         class="abs-round centered ellipse"
@@ -17,7 +21,7 @@
       <div
         class="abs-round planet centered"
         style="background-color: blue;"
-        v-for="planet in planets"
+        v-for="(planet, index) in planets"
         :key="planet.name"
         :id="planet.name"
         :style="{
@@ -27,20 +31,28 @@
           left: planet.x + '%',
         }"
         :ref="planet.name"
-        @click="() => selectPlanet(planet.name)"
+        @click.stop="() => selectPlanet(planet, index)"
       ></div>
       <div class="abs-round centered sun" style="width: 6vh;height: 6vh"></div>
+      <span :style="{
+        position: 'absolute',
+        width: '5px',
+        height: '5px',
+        backgroundColor: 'red',
+        top: viewOffset.y + '%',
+        left: viewOffset.x + '%',
+      }"></span>
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { computed, onMounted, ref, ShallowRef, useTemplateRef } from 'vue';
+import { onMounted, ref } from 'vue';
 import { Planet } from './planet';
 
-const viewOffset = ref({ y: 0, x: 0 });
+const viewOffset = ref({ y: -2, x: -2 });
 const viewScale = ref(1);
-const selectedPlanet = ref<Readonly<ShallowRef<unknown, unknown>>|null>(null);
+const selectedPlanet = ref<Planet | null>(null);
 const ellipses: number[] = [90, 72, 60, 48, 30, 18];
 const planets = ref<Planet[]>([
   { y: 40, x: 10, d: 7, p: 600, name: "pienerth", speed: 0.1 },
@@ -59,12 +71,35 @@ const getPosOnEllipse = (x: number, y: number, w: number, h: number, p: number) 
   };
 }
 
-const selectPlanet = (planetRef: string) => {
+const unselectPlanet = () => {
+  viewScale.value = 1;
+  selectedPlanet.value = null;
+  viewOffset.value = {
+    x: 0,
+    y: 0
+  };
+}
+
+const selectPlanet = (planet: Planet, index: number) => {
   if (selectedPlanet.value == null) {
-    selectedPlanet.value = useTemplateRef(planetRef);
-    viewScale.value = 4;
-    console.log(selectedPlanet.value);
+    selectedPlanet.value = planet;
+    //viewScale.value = 2;
+
+    // TEMP HERE
+    const newPos = getPosOnEllipse(50, 50, ellipses[index], ellipses[index] / 2, planets.value[index].p);
+    
+    // viewOffset.value = {
+    //   y: - (newPos.y / 2) * viewScale.value,
+    //   x: newPos.x * 2 ** (viewScale.value - 1)
+    // };
+
+    viewOffset.value = {
+      y: newPos.y,
+      x: newPos.x
+    };
   }
+  console.log("selectedPlanet.value", selectedPlanet.value);
+  console.log("viewOffset.value", viewOffset.value);
 }
 
 const movePlanets = () => {
@@ -77,16 +112,22 @@ const movePlanets = () => {
       x: newPos.x,
       y: newPos.y
     };
-    if (selectedPlanet.value?.id == planets.value[index].name) {
+    if (selectedPlanet.value == planets.value[index]) {
       viewOffset.value = {
-        y: - newPos.y + 80,
-        x: - newPos.x + 80
+        y: - newPos.y / 2,
+        x: - newPos.x / 2
       };
+      console.log("planets.value[index]", planets.value[index]);
+      console.log("viewOffset.value", viewOffset.value);
     }
   }
 }
 
 onMounted(() => {
-  setInterval(movePlanets, 10);
+  movePlanets();
+  // setInterval(movePlanets, 10);
 });
+// -13 ; -2
+// 36 ; 14
+
 </script>

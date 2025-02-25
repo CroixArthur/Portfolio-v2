@@ -12,6 +12,7 @@ body {
     position: relative;
     height: 100%;
     width: 100%;
+    transition: all .5s ease-in-out;
 }
 
 .abs-round {
@@ -23,7 +24,7 @@ body {
     box-shadow: 0px 0px 15px 10px rgb(252, 150, 1, 0.8);
     cursor: pointer;
 }
-
+/*
 .planet:before {
     width: 110%;
     height: 110%;
@@ -33,6 +34,7 @@ body {
     content: "";
     display: block;
 }
+*/
 
 .centered {
     top: 50%;
