@@ -3,9 +3,9 @@
     <div
       class="camera"
       :style="{
-        // marginTop: - viewOffset.y + 'vh',
-        // marginLeft: - viewOffset.x + 'vw',
-        // scale: viewScale
+        marginTop: - viewOffset.y + 'vh',
+        marginLeft: - viewOffset.x + 'vw',
+        scale: viewScale
       }"
       @click="() => unselectPlanet()"
     >
@@ -81,17 +81,6 @@ const selectPlanet = (planet: Planet, index: number) => {
   if (selectedPlanet.value == null) {
     selectedPlanet.value = planet;
     viewScale.value = 3;
-
-    // TEMP HERE
-    const newPos = getPosOnEllipse(50, 50, ellipses[index], ellipses[index] / 2, planets.value[index].p);
-    // viewOffset.value = {
-    //   y: (newPos.y * viewScale.value) - (50 * (viewScale.value - 1)),
-    //   x: (newPos.x * viewScale.value) - (50 * (viewScale.value - 1))
-    // };
-    viewOffset.value = {
-      y: newPos.y,
-      x: newPos.x
-    };
   }
   console.log("selectedPlanet.value", selectedPlanet.value);
   console.log("viewOffset.value", viewOffset.value);
@@ -107,23 +96,14 @@ const movePlanets = () => {
       x: newPos.x,
       y: newPos.y
     };
-    // console.log("selectedPlanet", selectedPlanet.value?.name);
-    // console.log("planets.value[index]", planets.value[index].name);
-    // console.log("bool", selectedPlanet.value?.name == planets.value[index].name);
     if (selectedPlanet.value?.name == planets.value[index].name) {
-    // console.log("selectedPlanet", selectedPlanet.value?.name);
-    // console.log("planets.value[index]", planets.value[index].name);
-      // viewOffset.value = {
-      //   y: - newPos.y / 2,
-      //   x: - newPos.x / 2
-      // };
-      // viewOffset.value = {
-      //   y: (newPos.y * viewScale.value) - (50 * (viewScale.value - 1)),
-      //   x: (newPos.x * viewScale.value) - (50 * (viewScale.value - 1))
-      // };
+      const scaleY = (newPos.y * viewScale.value) - (50 * (viewScale.value - 1));
+      const scaleX = (newPos.x * viewScale.value) - (50 * (viewScale.value - 1));
+      const offsetY = scaleY - 50;
+      const offsetX = scaleX - planets.value[index].d * 0.4;
       viewOffset.value = {
-        y: newPos.y,
-        x: newPos.x
+        y: offsetY,
+        x: offsetX
       };
       console.log("planets.value[index]", {x: planets.value[index].x, y: planets.value[index].y});
       console.log("viewOffset.value", {x: viewOffset.value.x, y: viewOffset.value.y});
@@ -135,7 +115,5 @@ onMounted(() => {
   // movePlanets();
   setInterval(movePlanets, 10);
 });
-// -13 ; -2
-// 36 ; 14
 
 </script>
