@@ -1,18 +1,23 @@
 <template>
-  <main>
+  <main
+    :style="{
+      }"
+    >
     <div
       class="camera"
       :style="{
         marginTop: - viewOffset.y + 'vh',
         marginLeft: - viewOffset.x + 'vw',
-        scale: viewScale
       }"
       @click="() => unselectPlanet()"
     >
       <div
         class="abs-round centered ellipse"
         v-for="(ellipse, index) in ellipses"
-        :style="'width: '+ellipse+'%;height: '+(ellipse/2)+'%'"
+        :style="{
+          width: ellipse * viewScale + '%',
+          height: ellipse * viewScale / 2 + '%'
+        }"
         :key="'ellipse-'+index"
       ></div>
       <div
@@ -22,15 +27,20 @@
         :key="planet.name"
         :id="planet.name"
         :style="{
-          width: planet.d + 'vh',
-          height: planet.d + 'vh',
+          width: planet.d * viewScale + 'vh',
+          height: planet.d * viewScale + 'vh',
           top: planet.y + '%',
           left: planet.x + '%',
         }"
         :ref="planet.name"
         @click.stop="() => selectPlanet(planet, index)"
       ></div>
-      <div class="abs-round centered sun" style="width: 6vh;height: 6vh"></div>
+      <div
+        class="abs-round centered sun"
+        :style="{
+          width: 6 * viewScale + 'vh',
+          height: 6 * viewScale + 'vh'
+        }"></div>
       <span :style="{
         position: 'absolute',
         width: '5px',
@@ -80,7 +90,7 @@ const unselectPlanet = () => {
 const selectPlanet = (planet: Planet, index: number) => {
   if (selectedPlanet.value == null) {
     selectedPlanet.value = planet;
-    viewScale.value = 3;
+    viewScale.value = 80 / planet.d;
   }
   console.log("selectedPlanet.value", selectedPlanet.value);
   console.log("viewOffset.value", viewOffset.value);
@@ -88,7 +98,7 @@ const selectPlanet = (planet: Planet, index: number) => {
 
 const movePlanets = () => {
   for (let index = 0; index < planets.value.length; index++) {
-    const newPos = getPosOnEllipse(50, 50, ellipses[index], ellipses[index] / 2, planets.value[index].p);
+    const newPos = getPosOnEllipse(50, 50, ellipses[index] * viewScale.value, ellipses[index]  * viewScale.value / 2, planets.value[index].p);
     const step = planets.value[index].speed;
     planets.value[index] = {
       ...planets.value[index],
@@ -97,10 +107,8 @@ const movePlanets = () => {
       y: newPos.y
     };
     if (selectedPlanet.value?.name == planets.value[index].name) {
-      const scaleY = (newPos.y * viewScale.value) - (50 * (viewScale.value - 1));
-      const scaleX = (newPos.x * viewScale.value) - (50 * (viewScale.value - 1));
-      const offsetY = scaleY - 50;
-      const offsetX = scaleX - planets.value[index].d * 0.4;
+      const offsetY = newPos.y - 50;
+      const offsetX = newPos.x - planets.value[index].d * 0.8;
       viewOffset.value = {
         y: offsetY,
         x: offsetX
@@ -115,5 +123,12 @@ onMounted(() => {
   // movePlanets();
   setInterval(movePlanets, 10);
 });
+
+
+/**
+ * TODO
+ * 
+ * Box shadow size for the sun (css variable that rescales)
+ */
 
 </script>
