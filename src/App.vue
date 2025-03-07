@@ -1,8 +1,5 @@
 <template>
-  <main
-    :style="{
-      }"
-    >
+  <main>
     <div
       class="camera"
       :style="{
@@ -34,7 +31,9 @@
         }"
         :ref="planet.name"
         @click.stop="() => selectPlanet(planet, index)"
-      ></div>
+      >
+        <div><span></span></div>
+      </div>
       <div
         class="abs-round centered sun"
         :style="{
